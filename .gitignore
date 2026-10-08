@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+test.db
+*.db
+app.db
+
+# IDE
+.vscode/
+.idea/
+
+# Generated certificates (not committed to source control)
+certificates/
+
+# Secrets
+.env
+
+# OS
+.DS_Store
+Thumbs.db

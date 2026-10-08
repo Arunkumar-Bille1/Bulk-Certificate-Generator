@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulk Certificate Generator — Dashboard</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header>
+      <div class="logo-section">
+        <div class="logo-icon">📜</div>
+        <div class="title-group">
+          <h1>Bulk Certificate Generator</h1>
+          <p>Asynchronous High-Throughput PDF Generation Platform</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a href="/docs" target="_blank" class="btn btn-secondary btn-sm">
+          ⚡ OpenAPI Docs
+        </a>
+      </div>
+    </header>
+
+    <!-- Overview Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-label">Total Jobs</span>
+          <span class="stat-icon">📦</span>
+        </div>
+        <div class="stat-value" id="stat-total-jobs">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-label">Certs Generated</span>
+          <span class="stat-icon">🎓</span>
+        </div>
+        <div class="stat-value" id="stat-total-certs">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-label">Success Rate</span>
+          <span class="stat-icon">📈</span>
+        </div>
+        <div class="stat-value" id="stat-success-rate">100%</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('create-tab')">
+        <span>✨ Create New Job</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('jobs-tab')">
+        <span>⚡ Active Jobs Queue</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('certs-tab')">
+        <span>📂 Certificate Explorer</span>
+      </button>
+    </div>
+
+    <!-- TAB 1: Create Job Form -->
+    <div id="create-tab" class="tab-content active">
+      <div class="card">
+        <div class="card-title">
+          <span>Certificate Generation Request</span>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="loadSampleData()">
+            🎲 Fill Sample Recipients
+          </button>
+        </div>
+
+        <form id="create-job-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Certificate Title *</label>
+              <input type="text" id="cert-title" class="form-control" placeholder="e.g. Certificate of Excellence" required value="Certificate of Completion">
+            </div>
+            <div class="form-group">
+              <label>Course / Program Name *</label>
+              <input type="text" id="course-name" class="form-control" placeholder="e.g. Cloud Architecture 101" required value="Backend Systems Engineering">
+            </div>
+            <div class="form-group">
+              <label>Event Name *</label>
+              <input type="text" id="event-name" class="form-control" placeholder="e.g. Global Tech Summit 2026" required value="Aereo Cloud Bootcamp 2026">
+            </div>
+            <div class="form-group">
+              <label>Issuer Name *</label>
+              <input type="text" id="issuer-name" class="form-control" placeholder="e.g. Aereo Cloud Platform" required value="Aereo Cloud Certification Authority">
+            </div>
+            <div class="form-group">
+              <label>Issue Date *</label>
+              <input type="date" id="issue-date" class="form-control" required>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.5rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 1.05rem; font-weight: 600;">Recipients List (<span id="recipient-count">0</span>)</h3>
+            <div style="display: flex; gap: 0.5rem;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="addRecipientRow()">
+                ➕ Add Recipient
+              </button>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 50px;">#</th>
+                  <th>Full Name *</th>
+                  <th>Email Address *</th>
+                  <th style="width: 80px; text-align: center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="recipients-tbody">
+                <!-- Dynamic rows -->
+              </tbody>
+            </table>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn btn-success">
+              🚀 Launch Bulk Generation Job
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- TAB 2: Jobs Queue -->
+    <div id="jobs-tab" class="tab-content">
+      <div class="card">
+        <div class="card-title">
+          <span>Bulk Generation Jobs</span>
+          <button class="btn btn-secondary btn-sm" onclick="refreshJobsList()">
+            🔄 Refresh Queue
+          </button>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Job ID</th>
+                <th>Status</th>
+                <th>Progress</th>
+                <th>Recipients</th>
+                <th>Created At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="jobs-tbody">
+              <!-- Dynamic Jobs List -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: Certificate Explorer -->
+    <div id="certs-tab" class="tab-content">
+      <div class="card">
+        <div class="card-title">
+          <span id="certs-explorer-title">Generated Certificates</span>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <input type="text" id="cert-search" class="form-control" placeholder="Search by name or email..." style="width: 240px; padding: 0.4rem 0.8rem; font-size: 0.85rem;" oninput="filterCertificates()">
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Certificate Number</th>
+                <th>Recipient Name</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Generated At</th>
+                <th>Download</th>
+              </tr>
+            </thead>
+            <tbody id="certs-tbody">
+              <!-- Dynamic Certs -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
